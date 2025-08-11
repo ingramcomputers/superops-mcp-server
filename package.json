@@ -1,0 +1,59 @@
+{
+  "name": "superops-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Superops.ai GraphQL API documentation",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node src/index.js",
+    "dev": "tsc --watch",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "bin": {
+    "superops-mcp-server": "./src/index.js"
+  },
+  "files": [
+    "src/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "superops",
+    "graphql",
+    "msp", 
+    "documentation",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_USERNAME/superops-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YOUR_USERNAME/superops-mcp-server/issues"
+  },
+  "homepage": "https://github.com/YOUR_USERNAME/superops-mcp-server#readme",
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "cheerio": "^1.0.0-rc.12",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "mcp": {
+    "server": {
+      "name": "superops",
+      "description": "Superops.ai GraphQL API documentation server",
+      "version": "1.0.0"
+    }
+  }
+}
