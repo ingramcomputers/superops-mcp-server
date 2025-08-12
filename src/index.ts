@@ -142,7 +142,11 @@ class SuperopsDocumentationMCP {
                 },
                 subdomain: {
                   type: 'string', 
-                  description: 'Your Superops.ai subdomain (e.g., "ingramtechnology")',
+                  description: 'Your Superops.ai subdomain (e.g., "ingramtechnology", "yourcompany")',
+                },
+                apiToken: {
+                  type: 'string',
+                  description: 'Your Superops.ai API token (format: api-XXXXXXXXX)',
                 },
                 variables: {
                   type: 'object',
@@ -154,7 +158,7 @@ class SuperopsDocumentationMCP {
                   description: 'Which endpoint to use (default: us)',
                 },
               },
-              required: ['operationName', 'subdomain'],
+              required: ['operationName', 'subdomain', 'apiToken'],
             },
           },
         ] as Tool[],
@@ -192,6 +196,7 @@ class SuperopsDocumentationMCP {
             return await this.generateRequest(
               request.params.arguments?.operationName as string,
               request.params.arguments?.subdomain as string,
+              request.params.arguments?.apiToken as string,
               request.params.arguments?.variables as object,
               request.params.arguments?.endpoint as string
             );
@@ -922,16 +927,21 @@ ${operation.arguments
 - **URL**: https://euapi.superops.ai/msp
 - **Region**: Europe
 
-## Required Headers
+## Required Headers (ALL Required)
 
-### Authentication Header
+### 1. Authorization Header
+\`\`\`
+Authorization: Bearer api-XXXXXXXXX
+\`\`\`
+Get your API token from Superops.ai Settings → API Keys
+
+### 2. Customer Subdomain Header
 \`\`\`
 CustomerSubDomain: YOUR_SUBDOMAIN
 \`\`\`
+Your organization's subdomain (e.g., "ingramtechnology", "yourcompany")
 
-Replace \`YOUR_SUBDOMAIN\` with your actual Superops.ai subdomain (e.g., "ingramtechnology").
-
-### Content Type
+### 3. Content Type Header
 \`\`\`
 Content-Type: application/json
 \`\`\`
@@ -941,7 +951,8 @@ Content-Type: application/json
 \`\`\`bash
 curl -X POST https://api.superops.ai/msp \\
   -H "Content-Type: application/json" \\
-  -H "CustomerSubDomain: ingramtechnology" \\
+  -H "Authorization: Bearer api-your-token-here" \\
+  -H "CustomerSubDomain: yourcompany" \\
   -d '{
     "query": "query getTicketList($input: ListInfoInput!) { getTicketList(input: $input) { tickets { ticketId displayId subject status } listInfo { totalCount } } }",
     "variables": {
@@ -953,28 +964,54 @@ curl -X POST https://api.superops.ai/msp \\
   }'
 \`\`\`
 
-## Authentication Methods
+## Authentication Requirements
 
-Superops.ai uses **CustomerSubDomain header** for authentication instead of bearer tokens. Make sure to:
+Superops.ai requires **BOTH** authentication headers:
 
-1. **Use the correct subdomain** - This is your organization's subdomain in Superops.ai
-2. **Include it in every request** - The CustomerSubDomain header is required for all API calls
-3. **Use HTTPS only** - All requests must use secure connections
+1. **Bearer Token** - Your API key from Superops.ai settings
+   - Format: \`api-XXXXXXXXX\`
+   - Get from: Superops.ai → Settings → API Keys
 
-## Common Subdomains Format
+2. **Customer Subdomain** - Your organization identifier
+   - Format: Just the subdomain part (no .superops.ai)
+   - Example: If your URL is \`https://acmecompany.superops.ai\`
+   - Then use: \`acmecompany\`
 
-- Format: \`yourcompany\` (without .superops.ai)  
-- Example: If your Superops URL is \`https://ingramtechnology.superops.ai\`
-- Then your subdomain is: \`ingramtechnology\`
+## How to Get Your Credentials
+
+### API Token
+1. Log into your Superops.ai account
+2. Go to **Settings** → **API Keys**
+3. Generate or copy your API token
+4. Format will be: \`api-XXXXXXXXX\`
+
+### Subdomain
+1. Look at your Superops.ai URL
+2. Example: \`https://yourcompany.superops.ai\`
+3. Your subdomain is: \`yourcompany\`
 
 ## Testing Your Connection
 
 \`\`\`bash
-# Test basic connectivity
+# Test with your actual credentials
 curl -X POST https://api.superops.ai/msp \\
   -H "Content-Type: application/json" \\
-  -H "CustomerSubDomain: YOUR_SUBDOMAIN" \\
+  -H "Authorization: Bearer api-your-actual-token" \\
+  -H "CustomerSubDomain: your-actual-subdomain" \\
   -d '{"query": "{ __schema { types { name } } }"}'
+\`\`\`
+
+## Using the generate_superops_request Tool
+
+Use the \`generate_superops_request\` tool to create complete, ready-to-use requests:
+
+\`\`\`javascript
+generate_superops_request({
+  operationName: "getTicketList",
+  subdomain: "yourcompany",
+  apiToken: "api-your-token-here",
+  variables: { "input": { "page": 1, "pageSize": 10 } }
+})
 \`\`\`
 
 ## Additional Resources
